@@ -1,145 +1,84 @@
 package main
 
+
+
 import (
-	"errors"
-	"fmt"
+
+    "errors"
+
+    "fmt"
+
 )
 
-type Producto struct {
-	id       int
-	nombre   string
-	precio   float64
-	cantidad int
+
+
+type Estudiante struct {
+
+    edad int
+
 }
 
-func (p Producto) GetID() int {
-	return p.id
+
+func (e Estudiante) GetEdad() int {
+
+    return e.edad
+
 }
 
-func (p Producto) GetNombre() string {
-	return p.nombre
+
+func (e *Estudiante) SetEdad(edad int) error {
+
+    if edad < 0 || edad > 80 {
+
+        return errors.New("ERROR: la edad debe estar entre 1 y 79 años")
+
+
+
+    }
+
+    e.edad = edad
+
+    return nil
+
 }
 
-func (p Producto) GetPrecio() float64 {
-	return p.precio
-}
 
-func (p Producto) GetCantidad() int {
-	return p.cantidad
-}
+func NewEstudiante(edad int) (*Estudiante, error) {
 
-func (p *Producto) SetPrecio(precio float64) error {
-	if precio < 0 {
-		return errors.New("ERROR: el precio no puede ser negativo")
-	}
-	p.precio = precio
-	return nil
-}
+    est := &Estudiante{}
 
-func (p *Producto) SetCantidad(cantidad int) error {
-	if cantidad < 0 {
-		return errors.New("ERROR: la cantidad no puede ser negativa")
-	}
-	p.cantidad = cantidad
-	return nil
-}
+    err := est.SetEdad(edad)
 
-func NewProducto(id int, nombre string, precio float64, cantidad int) (*Producto, error) {
-	if id <= 0 {
-		return nil, errors.New("ERROR: el ID debe ser mayor a 0")
-	}
-	p := &Producto{}
-	p.id = id
-	p.nombre = nombre
 
-	if err := p.SetPrecio(precio); err != nil {
-		return nil, err
-	}
-	if err := p.SetCantidad(cantidad); err != nil {
-		return nil, err
-	}
 
-	return p, nil
-}
+    if err != nil {
 
-func (p Producto) MostrarInfo() {
-	fmt.Printf("ID: %d | Nombre: %s | Precio: $%.2f | Cantidad: %d unidades\n",
-		p.id, p.nombre, p.precio, p.cantidad)
-}
+        return nil, err
 
-type Inventario struct {
-	productos map[int]Producto
-}
 
-func NuevoInventario() Inventario {
-	return Inventario{
-		productos: make(map[int]Producto),
-	}
-}
 
-func (inv *Inventario) AgregarProducto(p Producto) error {
-	if _, existe := inv.productos[p.GetID()]; existe {
-		return errors.New("ERROR: ya existe un producto con ese ID")
-	}
-	inv.productos[p.GetID()] = p
-	fmt.Printf("Producto '%s' agregado correctamente.\n", p.GetNombre())
-	return nil
-}
+    }
 
-func (inv *Inventario) EliminarProducto(id int) error {
-	if _, existe := inv.productos[id]; !existe {
-		return errors.New("ERROR: no existe un producto con ese ID")
-	}
-	delete(inv.productos, id)
-	fmt.Printf("Producto con ID %d eliminado.\n", id)
-	return nil
-}
+    return est, nil
 
-func (inv Inventario) BuscarProducto(id int) (Producto, bool) {
-	p, existe := inv.productos[id]
-	return p, existe
-}
-
-func (inv Inventario) ListarProductos() {
-	if len(inv.productos) == 0 {
-		fmt.Println("El inventario está vacío.")
-		return
-	}
-	fmt.Println("===== LISTA DE INVENTARIO =====")
-	for _, p := range inv.productos {
-		p.MostrarInfo()
-	}
-	fmt.Println("===============================")
 }
 
 func main() {
-	inventario := NuevoInventario()
 
-	p1, err := NewProducto(1, "Laptop", 850.50, 10)
-	if err == nil {
-		inventario.AgregarProducto(*p1)
-	}
+    estudiante := Estudiante{}
 
-	p2, err := NewProducto(2, "Mouse", 15.99, 50)
-	if err == nil {
-		inventario.AgregarProducto(*p2)
-	}
+    err := estudiante.SetEdad(100)
 
-	fmt.Println()
-	inventario.ListarProductos()
 
-	fmt.Println("\nBuscando y actualizando el producto con ID 2...")
-	if prod, encontrado := inventario.BuscarProducto(2); encontrado {
-		prod.SetPrecio(12.50)
-		prod.SetCantidad(45)
-		inventario.productos[prod.GetID()] = prod
-		fmt.Println("¡Actualizado con éxito!")
-		prod.MostrarInfo()
-	}
 
-	fmt.Println()
-	inventario.EliminarProducto(1)
+    if err != nil {
 
-	fmt.Println()
-	inventario.ListarProductos()
-}	
+        fmt.Println("No se puede modificar el registro", err)
+
+    }
+
+    fmt.Println("Hola, su edad es: ", estudiante.GetEdad())
+
+
+
+}
